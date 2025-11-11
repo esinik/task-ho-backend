@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 
 const TaskSchema = new mongoose.Schema({
-  tab: { type: String, enum: ['inbox','today','week','later','waiting','done'], required: true },
+  // Historical field used for UI filters previously; kept for backward-compat
+  tab: { type: String, enum: ['inbox','today','week','month','later','waiting','done'], default: 'inbox' },
+  // New status field to represent task lifecycle
+  status: { type: String, enum: ['idle','inprogress','later','waiting','done'], default: 'idle', index: true },
   customer: { type: String, default: '' },
   title: { type: String, required: true },
   type: { type: String, enum: ['Fatura','Rapor','Ödeme'], default: 'Rapor' },

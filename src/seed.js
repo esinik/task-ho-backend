@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { Task } from './modules/tasks/model.js';
 import { Fee } from './modules/fees/model.js';
 import { Customer } from './modules/customers/model.js';
+import { User } from './modules/auth/model.js';
 
 const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/taskho';
 
@@ -12,15 +13,25 @@ const start = async () => {
   await Customer.deleteMany({});
   await Task.deleteMany({});
   await Fee.deleteMany({});
+  await User.deleteMany({});
+
+  // Create a test user
+  const testUser = new User({
+    email: 'test@taskho.com',
+    password: 'test123',
+    name: 'Test User'
+  });
+  await testUser.save();
+  console.log('Test user created: test@taskho.com / test123');
 
   const customers = ['ACME LLC','Blue Motors','Kudo Accounting','Sezer Co.'];
   await Customer.insertMany(customers.map(name => ({ name })));
 
   await Task.insertMany([
-    { tab: 'inbox', customer: 'ACME LLC', title: 'Yeni müşteri kaydı', type: 'Rapor', due: '2025-10-24', priority: 'High' },
-    { tab: 'today', customer: 'Blue Motors', title: 'Fatura kontrolü', type: 'Fatura', due: '2025-10-22', priority: 'Medium' },
-    { tab: 'week', customer: 'Kudo Accounting', title: 'Ödeme takibi', type: 'Ödeme', due: '2025-10-26', priority: 'High', notes: 'Müşteri arandı' },
-    { tab: 'done', customer: 'Sezer Co.', title: 'Kasa raporu', type: 'Rapor', due: '2025-10-21', priority: 'Low', notes: 'Teslim edildi' },
+    { tab: 'inbox', status: 'idle', customer: 'ACME LLC', title: 'Yeni müşteri kaydı', type: 'Rapor', due: '2025-10-24', priority: 'High' },
+    { tab: 'today', status: 'inprogress', customer: 'Blue Motors', title: 'Fatura kontrolü', type: 'Fatura', due: '2025-10-22', priority: 'Medium' },
+    { tab: 'week', status: 'waiting', customer: 'Kudo Accounting', title: 'Ödeme takibi', type: 'Ödeme', due: '2025-10-26', priority: 'High', notes: 'Müşteri arandı' },
+    { tab: 'done', status: 'done', customer: 'Sezer Co.', title: 'Kasa raporu', type: 'Rapor', due: '2025-10-21', priority: 'Low', notes: 'Teslim edildi' },
   ]);
 
   await Fee.insertMany([
