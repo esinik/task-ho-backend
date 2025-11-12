@@ -25,7 +25,12 @@ const start = async () => {
   console.log('Test user created: test@taskho.com / test123');
 
   const customers = ['ACME LLC','Blue Motors','Kudo Accounting','Sezer Co.'];
-  await Customer.insertMany(customers.map(name => ({ name })));
+  await Customer.insertMany([
+    { name: 'ACME LLC', isPaid: true, fee: 500 },
+    { name: 'Blue Motors', isPaid: true, fee: 700 },
+    { name: 'Kudo Accounting', isPaid: true, fee: 650 },
+    { name: 'Sezer Co.', isPaid: false, fee: 0 },
+  ]);
 
   await Task.insertMany([
     { tab: 'inbox', status: 'idle', customer: 'ACME LLC', title: 'Yeni müşteri kaydı', type: 'Rapor', due: '2025-10-24', priority: 'High' },
