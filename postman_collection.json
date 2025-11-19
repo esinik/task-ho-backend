@@ -1,0 +1,151 @@
+{
+  "info": {
+    "name": "TaskHo API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for TaskHo backend. Set the `baseUrl` variable and use the `authToken` variable (raw JWT without Bearer prefix)."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api" },
+    { "key": "authToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"secret123\",\n  \"name\": \"User\"\n}" }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"secret123\"\n}" }
+      }
+    },
+    {
+      "name": "Auth - Me",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+      }
+    },
+    {
+      "name": "Auth - Change Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/auth/change-password", "host": ["{{baseUrl}}"], "path": ["auth", "change-password"] },
+        "body": { "mode": "raw", "raw": "{\n  \"currentPassword\": \"secret123\",\n  \"newPassword\": \"newSecret456\"\n}" }
+      }
+    },
+    {
+      "name": "Tasks - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/tasks", "host": ["{{baseUrl}}"], "path": ["tasks"] }
+      }
+    },
+    {
+      "name": "Tasks - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/tasks", "host": ["{{baseUrl}}"], "path": ["tasks"] },
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Rapor Hazırla\",\n  \"due\": \"2025-11-30\"\n}" }
+      }
+    },
+    {
+      "name": "Tasks - Update",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": ["{{baseUrl}}"], "path": ["tasks", ":id"] },
+        "body": { "mode": "raw", "raw": "{\n  \"title\": \"Güncellenmiş Başlık\"\n}" }
+      }
+    },
+    {
+      "name": "Tasks - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/tasks/:id", "host": ["{{baseUrl}}"], "path": ["tasks", ":id"] }
+      }
+    },
+    {
+      "name": "Fees - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/fees", "host": ["{{baseUrl}}"], "path": ["fees"] }
+      }
+    },
+    {
+      "name": "Fees - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/fees", "host": ["{{baseUrl}}"], "path": ["fees"] },
+        "body": { "mode": "raw", "raw": "{\n  \"customer\": \"Müşteri A\",\n  \"month\": \"2025-11\",\n  \"amount\": 1500\n}" }
+      }
+    },
+    {
+      "name": "Fees - Update",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/fees/:id", "host": ["{{baseUrl}}"], "path": ["fees", ":id"] },
+        "body": { "mode": "raw", "raw": "{\n  \"status\": \"Ödendi\"\n}" }
+      }
+    },
+    {
+      "name": "Fees - Delete",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/fees/:id", "host": ["{{baseUrl}}"], "path": ["fees", ":id"] }
+      }
+    },
+    {
+      "name": "Customers - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+      }
+    },
+    {
+      "name": "Customers - Create/Update",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{authToken}}" }
+        ],
+        "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] },
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Yeni Müşteri\",\n  \"isPaid\": false,\n  \"fee\": 0\n}" }
+      }
+    }
+  ]
+}
