@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { router as taskRouter } from './modules/tasks/routes.js';
 import { router as feeRouter } from './modules/fees/routes.js';
 import { router as customerRouter } from './modules/customers/routes.js';
+import { router as calendarRouter } from './modules/calendar/routes.js';
 import { router as authRouter } from './modules/auth/routes.js';
 import { authMiddleware } from './modules/auth/middleware.js';
 
@@ -14,3 +15,4 @@ router.use('/auth', authRouter);
 router.use('/tasks', authMiddleware, taskRouter);
 router.use('/fees', authMiddleware, feeRouter);
 router.use('/customers', authMiddleware, customerRouter);
+router.use('/calendar', authMiddleware, calendarRouter);

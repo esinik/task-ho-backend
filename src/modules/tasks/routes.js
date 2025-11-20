@@ -95,6 +95,62 @@ router.get('/', async (req, res) => {
   })));
 });
 
+// Weekly calendar view - returns tasks grouped by customer and date
+router.get('/weekly', async (req, res) => {
+  const { startDate } = req.query;
+  
+  // Parse and validate startDate (should be a Monday)
+  let start;
+  if (startDate) {
+    start = new Date(startDate + 'T00:00:00Z');
+  } else {
+    // Default to current week's Monday
+    const now = new Date();
+    start = new Date(now);
+    const day = start.getDay(); // 0 Sun..6 Sat
+    const diffToMonday = (day + 6) % 7; // 0=>6,1=>0,...
+    start.setDate(start.getDate() - diffToMonday);
+  }
+  
+  // Calculate end date (Sunday)
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  
+  const startStr = start.toISOString().slice(0, 10);
+  const endStr = end.toISOString().slice(0, 10);
+  
+  // Fetch all tasks in the week range
+  const tasks = await Task.find({
+    due: { $gte: startStr, $lte: endStr }
+  }).sort({ customer: 1, due: 1 }).lean();
+  
+  // Group tasks by customer and date
+  const grouped = {};
+  tasks.forEach(task => {
+    const customer = task.customer || 'Unassigned';
+    if (!grouped[customer]) {
+      grouped[customer] = {};
+    }
+    if (!grouped[customer][task.due]) {
+      grouped[customer][task.due] = [];
+    }
+    grouped[customer][task.due].push({
+      id: task._id,
+      title: task.title,
+      type: task.type,
+      status: task.status,
+      priority: task.priority,
+      notes: task.notes,
+    });
+  });
+  
+  res.json({
+    startDate: startStr,
+    endDate: endStr,
+    tasks: grouped,
+  });
+});
+
 router.post('/', async (req, res) => {
   const data = createSchema.parse(req.body);
   // Backward compatibility: infer status from tab if not explicitly set

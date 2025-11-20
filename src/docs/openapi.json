@@ -58,6 +58,17 @@
           "isPaid": { "type": "boolean" },
           "fee": { "type": "number" }
         }
+      },
+      "CalendarNote": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "customer": { "type": "string" },
+          "title": { "type": "string" },
+          "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+          "notes": { "type": "string" },
+          "isCompleted": { "type": "boolean" }
+        }
       }
     }
   },
@@ -156,6 +167,52 @@
         "responses": { "201": { "description": "Created" } }
       }
     },
+    "/tasks/weekly": {
+      "get": {
+        "summary": "Get weekly calendar data (tasks grouped by customer and date)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "startDate", "in": "query", "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }, "description": "Week start date (Monday), defaults to current week" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Weekly calendar data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "startDate": { "type": "string", "description": "Week start (Monday)" },
+                    "endDate": { "type": "string", "description": "Week end (Sunday)" },
+                    "tasks": {
+                      "type": "object",
+                      "description": "Tasks grouped by customer name and date",
+                      "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "string" },
+                              "title": { "type": "string" },
+                              "type": { "type": "string" },
+                              "status": { "type": "string" },
+                              "priority": { "type": "string" },
+                              "notes": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tasks/{id}": {
       "patch": {
         "summary": "Update task",
@@ -218,6 +275,81 @@
         "security": [{ "bearerAuth": [] }],
         "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Customer" } } } },
         "responses": { "201": { "description": "Created" }, "200": { "description": "Updated existing" } }
+      }
+    },
+
+    "/calendar": {
+      "get": {
+        "summary": "List calendar notes with optional date range filter",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "startDate", "in": "query", "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" } },
+          { "name": "endDate", "in": "query", "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" } },
+          { "name": "customer", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "Array of calendar notes" } }
+      },
+      "post": {
+        "summary": "Create calendar note",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CalendarNote" } } } },
+        "responses": { "201": { "description": "Created" } }
+      }
+    },
+    "/calendar/weekly": {
+      "get": {
+        "summary": "Get weekly calendar notes grouped by customer and date",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "startDate", "in": "query", "schema": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" }, "description": "Start date (Monday). If not provided, current week is used." }
+        ],
+        "responses": {
+          "200": {
+            "description": "Weekly calendar data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "startDate": { "type": "string" },
+                    "endDate": { "type": "string" },
+                    "notes": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/CalendarNote" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/calendar/{id}": {
+      "get": {
+        "summary": "Get calendar note by ID",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Calendar note" }, "404": { "description": "Not found" } }
+      },
+      "put": {
+        "summary": "Update calendar note",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "Updated" }, "404": { "description": "Not found" } }
+      },
+      "delete": {
+        "summary": "Delete calendar note",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Deleted" } }
       }
     }
   }
