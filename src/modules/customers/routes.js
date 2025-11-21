@@ -48,3 +48,36 @@ router.post('/', async (req, res) => {
     fee: created.fee,
   });
 });
+
+router.put('/:id', async (req, res) => {
+  const bodySchema = z.object({ 
+    name: z.string().min(1).max(120),
+    isPaid: z.boolean().optional().default(false),
+    fee: z.number().nonnegative().optional().default(0),
+  });
+  const data = bodySchema.parse(req.body);
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    return res.status(404).json({ error: 'Customer not found' });
+  }
+  customer.name = data.name;
+  customer.isPaid = data.isPaid;
+  customer.fee = data.fee;
+  await customer.save();
+  res.json({ 
+    id: customer._id, 
+    name: customer.name,
+    isPaid: customer.isPaid,
+    fee: customer.fee,
+  });
+});
+
+router.delete('/:id', async (req, res) => {
+  const customer = await Customer.findById(req.params.id);
+  if (!customer) {
+    return res.status(404).json({ error: 'Customer not found' });
+  }
+  await customer.deleteOne();
+  res.status(204).send();
+});
+
